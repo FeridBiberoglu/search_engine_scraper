@@ -24,7 +24,9 @@ from .scraper import GoogleScraper
 app = FastAPI(
     title="AutoScraper API",
     description="API for scraping Google search results and extracting business contact information",
-    version="1.0.0"
+    version="1.0.0",
+    docs_url=None,  # Disable Swagger UI
+    redoc_url=None  # Disable ReDoc
 )
 
 # Add CORS middleware
@@ -66,10 +68,39 @@ latest_results = {
     "filename": ""
 }
 
+# Track progress for frontend
+scrape_progress = {
+    "current": 0,
+    "total": 0,
+    "status": "idle",
+    "phase": "waiting",
+    "percentage": 0
+}
+
+email_progress = {
+    "current": 0,
+    "total": 0,
+    "status": "idle",
+    "percentage": 0
+}
+
+# Create a route for the React frontend
+@app.get("/app", response_class=HTMLResponse)
+async def get_react_app(request: Request):
+    """Render the React frontend."""
+    return templates.TemplateResponse("frontend.html", {"request": request})
+
+# Make the React app the default route
 @app.get("/", response_class=HTMLResponse)
 async def get_home(request: Request):
     """Render the home page."""
-    return templates.TemplateResponse("index.html", {"request": request})
+    # Check if the frontend.html template exists, if so serve the React app
+    frontend_template = os.path.join(current_dir, "templates", "frontend.html")
+    if os.path.exists(frontend_template):
+        return templates.TemplateResponse("frontend.html", {"request": request})
+    else:
+        # Fall back to the original template if the React frontend isn't built
+        return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/results", response_class=HTMLResponse)
 async def get_results(request: Request):
@@ -97,17 +128,49 @@ async def scrape_data(request: ScrapeRequest, background_tasks: BackgroundTasks)
     Returns:
         JSON response with job status
     """
-    global scraper, latest_results
+    global scraper, latest_results, scrape_progress
     
     # Reset scraper state
     scraper = GoogleScraper()
+    
+    # Reset progress
+    scrape_progress = {
+        "current": 0,
+        "total": request.num_pages,
+        "status": "Starting search...",
+        "phase": "searching",
+        "percentage": 0
+    }
     
     try:
         # Perform the search
         await scraper.search_google(request.query, request.num_pages)
         
-        # Process the URLs
+        # Update progress for processing
         if scraper.urls:
+            scrape_progress = {
+                "current": 0,
+                "total": len(scraper.urls),
+                "status": "Processing websites...",
+                "phase": "processing",
+                "percentage": 0
+            }
+            
+            # Set up progress callback
+            async def progress_callback(current, total):
+                global scrape_progress
+                scrape_progress = {
+                    "current": current,
+                    "total": total,
+                    "status": f"Processing website {current} of {total}",
+                    "phase": "processing",
+                    "percentage": int(current / total * 100) if total > 0 else 0
+                }
+            
+            # Set the callback
+            scraper.set_progress_callback(progress_callback)
+            
+            # Process the URLs
             await scraper.process_urls()
             
         # Save results
@@ -121,12 +184,187 @@ async def scrape_data(request: ScrapeRequest, background_tasks: BackgroundTasks)
             "filename": filename
         }
         
+        # Update progress to complete
+        scrape_progress = {
+            "current": scrape_progress["total"],
+            "total": scrape_progress["total"],
+            "status": "Completed",
+            "phase": "complete",
+            "percentage": 100
+        }
+        
         return JSONResponse(content={
             "message": "Scraping completed",
             "companies_found": len(scraper.companies),
-            "filename": filename
+            "filename": filename,
+            "query": request.query
         })
     except Exception as e:
+        # Update progress to error
+        scrape_progress = {
+            "current": 0,
+            "total": 0,
+            "status": f"Error: {str(e)}",
+            "phase": "error",
+            "percentage": 0
+        }
+        
+        return JSONResponse(
+            content={"error": str(e)},
+            status_code=500
+        )
+
+# Add the missing endpoints for the frontend
+@app.get("/scrape-progress")
+async def get_scrape_progress():
+    """
+    Get the current progress of the scraping job.
+    
+    Returns:
+        JSON response with progress information
+    """
+    global scrape_progress
+    return JSONResponse(content=scrape_progress)
+
+@app.get("/email-progress")
+async def get_email_progress():
+    """
+    Get the current progress of the email sending job.
+    
+    Returns:
+        JSON response with progress information
+    """
+    global email_progress
+    return JSONResponse(content=email_progress)
+
+@app.post("/send-emails/{filename}")
+async def send_emails_for_file(filename: str):
+    """
+    Send emails to all contacts in a specific file.
+    
+    Args:
+        filename: The name of the file containing contacts
+        
+    Returns:
+        JSON response with send status
+    """
+    global scraper, email_progress
+    
+    # Reset progress
+    email_progress = {
+        "current": 0,
+        "total": 0,
+        "status": "Starting...",
+        "percentage": 0
+    }
+    
+    try:
+        # Load the file if it's not the current one
+        if latest_results["filename"] != filename:
+            # TODO: Implement loading from file
+            return JSONResponse(
+                content={"error": "Loading from file not implemented yet"},
+                status_code=501
+            )
+        
+        # Set up progress callback
+        def progress_callback(current, total):
+            global email_progress
+            email_progress = {
+                "current": current,
+                "total": total,
+                "status": f"Sending email {current} of {total}",
+                "percentage": int(current / total * 100) if total > 0 else 0
+            }
+        
+        # Set the callback
+        scraper.set_email_progress_callback(progress_callback)
+        
+        # Send emails
+        emails_sent = scraper.send_emails_to_companies("introduction_email")
+        
+        # Update progress to complete
+        email_progress = {
+            "current": emails_sent,
+            "total": emails_sent,
+            "status": "Completed",
+            "percentage": 100
+        }
+        
+        return JSONResponse(content={
+            "message": "Emails sent successfully",
+            "emails_sent": emails_sent
+        })
+    except Exception as e:
+        # Update progress to error
+        email_progress = {
+            "current": 0,
+            "total": 0,
+            "status": f"Error: {str(e)}",
+            "percentage": 0
+        }
+        
+        return JSONResponse(
+            content={"error": str(e)},
+            status_code=500
+        )
+
+@app.post("/send-all-emails")
+async def send_all_emails():
+    """
+    Send emails to all contacts from all scraping sessions.
+    
+    Returns:
+        JSON response with send status
+    """
+    global scraper, email_progress
+    
+    # Reset progress
+    email_progress = {
+        "current": 0,
+        "total": 0,
+        "status": "Starting...",
+        "percentage": 0
+    }
+    
+    try:
+        # Set up progress callback
+        def progress_callback(current, total):
+            global email_progress
+            email_progress = {
+                "current": current,
+                "total": total,
+                "status": f"Sending email {current} of {total}",
+                "percentage": int(current / total * 100) if total > 0 else 0
+            }
+        
+        # Set the callback
+        scraper.set_email_progress_callback(progress_callback)
+        
+        # Send emails
+        emails_sent = scraper.send_emails_to_companies("introduction_email")
+        
+        # Update progress to complete
+        email_progress = {
+            "current": emails_sent,
+            "total": emails_sent,
+            "status": "Completed",
+            "percentage": 100
+        }
+        
+        return JSONResponse(content={
+            "message": "All emails sent successfully",
+            "emails_sent": emails_sent
+        })
+    except Exception as e:
+        # Update progress to error
+        email_progress = {
+            "current": 0,
+            "total": 0,
+            "status": f"Error: {str(e)}",
+            "percentage": 0
+        }
+        
         return JSONResponse(
             content={"error": str(e)},
             status_code=500

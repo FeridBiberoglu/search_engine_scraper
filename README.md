@@ -17,35 +17,65 @@ Advanced Google scraper and business contact finder with built-in email function
 - **Command-Line Interface**: Powerful CLI for automation and scripting
 - **Docker Support**: Easy deployment with Docker and docker-compose
 - **Asynchronous Processing**: Fast, concurrent processing of multiple websites
-
-## 📋 Documentation
-
-For comprehensive documentation, see:
-
-- [HTML Documentation](docs/html/index.html) - Detailed documentation with examples and API reference
-- [Project Structure](docs/project_structure.md) - Overview of the project's file structure
-- [API Reference](docs/api_reference.md) - Detailed API documentation
-
 ## 🛠️ Installation
 
-### Using Python
+### Using Python and Virtual Environment (Recommended)
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/autoscraper.git
-cd autoscraper
+# Navigate to the project directory
+cd autoscraper_pkg
 
-# Run the installation script
-chmod +x install.sh
-./install.sh
+# Create a virtual environment
+python -m venv venv
+
+# Activate the virtual environment
+# On Linux/Mac:
+source venv/bin/activate
+# On Windows:
+# venv\Scripts\activate
+
+# Install the required packages
+pip install -r requirements.txt
+
+# Install the package in development mode
+pip install -e .
 ```
 
-### Using Docker
+### Running the Application
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/autoscraper.git
-cd autoscraper
+# Make sure your virtual environment is activated
+source venv/bin/activate  # On Linux/Mac
+
+# Start the web server directly with uvicorn
+uvicorn autoscraper.app:app --reload
+
+# Or use the run.py script (if available in your directory)
+# python run.py web
+```
+
+Then open your browser and navigate to `http://localhost:8000`.
+
+### Troubleshooting Installation
+
+If you encounter a "No module named 'aiohttp'" error or similar:
+
+```bash
+# Make sure your virtual environment is activated
+source venv/bin/activate
+
+# Install the specific missing package
+pip install aiohttp
+
+# Or reinstall all requirements
+pip install -r requirements.txt
+```
+
+### Using Docker (Alternative)
+
+```bash
+# Navigate to the project directory
+cd autoscraper_pkg
 
 # Build and run with Docker Compose
 docker-compose up -d
@@ -56,11 +86,11 @@ docker-compose up -d
 ### Web Interface
 
 ```bash
-# Start the web server
-python -m autoscraper.app
+# Make sure your virtual environment is activated
+source venv/bin/activate  # On Linux/Mac
 
-# Or use the convenience script
-python run.py web
+# Start the web server directly with uvicorn
+uvicorn autoscraper.app:app --reload
 ```
 
 Then open your browser and navigate to `http://localhost:8000`.
@@ -68,14 +98,17 @@ Then open your browser and navigate to `http://localhost:8000`.
 ### Command-Line Interface
 
 ```bash
+# Make sure your virtual environment is activated
+source venv/bin/activate  # On Linux/Mac
+
 # Basic search
-autoscraper search "dentists amsterdam" --pages 3
+python -m autoscraper.cli search "dentists amsterdam" --pages 3
 
 # Search and send emails
-autoscraper search "lawyers new york" --pages 5 --send-emails --email-template introduction_email
+python -m autoscraper.cli search "lawyers new york" --pages 5 --send-emails --email-template introduction_email
 
 # List available email templates
-autoscraper templates
+python -m autoscraper.cli templates
 ```
 
 ## 🔌 API Reference
@@ -83,9 +116,10 @@ autoscraper templates
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/scrape` | POST | Start a new scraping job |
-| `/results` | GET | View scraping results |
+| `/scrape-progress` | GET | Get the current progress of a scraping job |
+| `/send-emails/{filename}` | POST | Send emails to contacts in a specific file |
+| `/send-all-emails` | POST | Send emails to all contacts |
 | `/download/{filename}` | GET | Download results as CSV |
-| `/send-email` | POST | Send an email to a specific contact |
 | `/email-templates` | GET | List available email templates |
 
 ## 📧 Email Templates
@@ -129,4 +163,31 @@ This tool is provided for educational purposes only. Web scraping may violate th
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Frontend Interface
+
+AutoScraper includes a modern React-based frontend built with:
+
+- React 18
+- TypeScript
+- Tailwind CSS
+- Vite
+
+The frontend provides an intuitive interface for:
+- Running scraping jobs
+- Monitoring progress in real-time
+- Viewing and downloading results
+- Sending emails to discovered contacts
+
+### Building the Frontend
+
+If you want to modify the frontend, you can rebuild it with:
+
+```bash
+cd frontend
+npm install
+npm run build:backend
+```
+
+This will build the frontend and automatically integrate it with the backend. 
