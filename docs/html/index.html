@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoScraper - Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #2C3E50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #2C3E50;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        h3 {
+            color: #444;
+        }
+        .logo {
+            max-width: 200px;
+            float: right;
+            margin: 0 0 20px 20px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .feature-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .feature-card h3 {
+            margin-top: 0;
+            color: #2C3E50;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #2C3E50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 5px solid #ffeeba;
+        }
+        .note {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 5px solid #bee5eb;
+        }
+        .diagram {
+            max-width: 100%;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .diagram img {
+            max-width: 800px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AutoScraper Documentation</h1>
+        <p>Advanced Google scraper and business contact finder</p>
+    </header>
+
+    <div class="section">
+        <h2>Overview</h2>
+        <p>
+            AutoScraper is a powerful tool designed to automate the process of searching Google for businesses, 
+            extracting contact information, and sending personalized emails. It features advanced techniques to 
+            bypass Google's security measures, making it an effective solution for lead generation and outreach campaigns.
+        </p>
+        <p>
+            The tool is built with a focus on flexibility, performance, and ease of use, offering both a 
+            command-line interface and a web interface for different user preferences.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Key Features</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>Google Search Scraping</h3>
+                <p>Automatically search Google for businesses based on keywords and extract URLs from search results.</p>
+                <p>Implements advanced techniques to bypass Google's security measures and avoid being blocked.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Contact Information Extraction</h3>
+                <p>Scrape websites to find email addresses, phone numbers, and other contact information.</p>
+                <p>Intelligent parsing to identify the most relevant contact details for businesses.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Email Automation</h3>
+                <p>Send personalized emails to extracted contacts using customizable templates.</p>
+                <p>Track email sending progress and manage outreach campaigns efficiently.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Web Interface</h3>
+                <p>User-friendly web interface for configuring and monitoring scraping jobs.</p>
+                <p>View and download results in various formats (CSV, JSON).</p>
+            </div>
+            <div class="feature-card">
+                <h3>Command-Line Interface</h3>
+                <p>Powerful CLI for automation and integration with other tools and scripts.</p>
+                <p>Rich output with progress indicators and detailed logging.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Docker Support</h3>
+                <p>Easy deployment with Docker and docker-compose.</p>
+                <p>Consistent environment across different platforms.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Architecture</h2>
+        <p>
+            AutoScraper follows a modular architecture with clear separation of concerns. The main components include:
+        </p>
+        <ul>
+            <li><strong>GoogleScraper</strong>: Core class for searching Google and extracting URLs</li>
+            <li><strong>EmailSender</strong>: Handles email composition and sending</li>
+            <li><strong>Web Interface</strong>: FastAPI-based web application for user interaction</li>
+            <li><strong>CLI</strong>: Command-line interface for scripting and automation</li>
+        </ul>
+        <div class="diagram">
+            <h3>Component Diagram</h3>
+            <pre>
++-------------------+      +-------------------+      +-------------------+
+|                   |      |                   |      |                   |
+|  Web Interface    |----->|  GoogleScraper    |----->|  Website Parser   |
+|  (FastAPI)        |      |  (Core Engine)    |      |  (Data Extraction)|
+|                   |      |                   |      |                   |
++-------------------+      +-------------------+      +-------------------+
+         ^                         |                          |
+         |                         |                          |
+         |                         v                          v
++-------------------+      +-------------------+      +-------------------+
+|                   |      |                   |      |                   |
+|  CLI Interface    |----->|  Email Sender     |<-----|  Results Storage  |
+|  (Typer)          |      |  (SMTP Client)    |      |  (CSV/JSON)       |
+|                   |      |                   |      |                   |
++-------------------+      +-------------------+      +-------------------+
+            </pre>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Installation</h2>
+        <h3>Using Python</h3>
+        <pre>
+# Clone the repository
+git clone https://github.com/yourusername/autoscraper.git
+cd autoscraper
+
+# Run the installation script
+chmod +x install.sh
+./install.sh
+        </pre>
+
+        <h3>Using Docker</h3>
+        <pre>
+# Clone the repository
+git clone https://github.com/yourusername/autoscraper.git
+cd autoscraper
+
+# Build and run with Docker Compose
+docker-compose up -d
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>Usage</h2>
+        <h3>Web Interface</h3>
+        <p>
+            The web interface provides an intuitive way to use AutoScraper. After installation:
+        </p>
+        <pre>
+# Start the web server
+python -m autoscraper.app
+
+# Or use the convenience script
+python run.py web
+        </pre>
+        <p>Then open your browser and navigate to <code>http://localhost:8000</code>.</p>
+
+        <h3>Command-Line Interface</h3>
+        <p>
+            The CLI offers powerful options for automation and scripting:
+        </p>
+        <pre>
+# Basic search
+autoscraper search "dentists amsterdam" --pages 3
+
+# Search and send emails
+autoscraper search "lawyers new york" --pages 5 --send-emails --email-template introduction_email
+
+# List available email templates
+autoscraper templates
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>API Reference</h2>
+        <h3>Web API Endpoints</h3>
+        <table>
+            <tr>
+                <th>Endpoint</th>
+                <th>Method</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>/scrape</code></td>
+                <td>POST</td>
+                <td>Start a new scraping job</td>
+            </tr>
+            <tr>
+                <td><code>/results</code></td>
+                <td>GET</td>
+                <td>View scraping results</td>
+            </tr>
+            <tr>
+                <td><code>/download/{filename}</code></td>
+                <td>GET</td>
+                <td>Download results as CSV</td>
+            </tr>
+            <tr>
+                <td><code>/send-email</code></td>
+                <td>POST</td>
+                <td>Send an email to a specific contact</td>
+            </tr>
+            <tr>
+                <td><code>/email-templates</code></td>
+                <td>GET</td>
+                <td>List available email templates</td>
+            </tr>
+        </table>
+
+        <h3>Python API</h3>
+        <p>
+            You can also use AutoScraper as a Python library in your own projects:
+        </p>
+        <pre>
+import asyncio
+from autoscraper import GoogleScraper, EmailSender
+
+async def main():
+    # Initialize the scraper
+    scraper = GoogleScraper()
+    
+    # Search for businesses
+    await scraper.search_google("dentists amsterdam", num_pages=3)
+    
+    # Process the URLs to extract contact information
+    await scraper.process_urls()
+    
+    # Save the results
+    scraper.save_results("dentists_amsterdam")
+    
+    # Send emails (optional)
+    scraper.send_emails_to_companies("introduction_email")
+
+# Run the async function
+asyncio.run(main())
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>Email Templates</h2>
+        <p>
+            AutoScraper comes with several pre-defined email templates that you can customize:
+        </p>
+        <ul>
+            <li><strong>introduction_email.txt</strong>: A general introduction to your services</li>
+            <li><strong>partnership_email.txt</strong>: Proposal for potential business partnerships</li>
+            <li><strong>service_offer_email.txt</strong>: Special offer for your services</li>
+            <li><strong>event_invitation_email.txt</strong>: Invitation to an event or webinar</li>
+        </ul>
+        <p>
+            Templates use placeholders like <code>{company_name}</code>, <code>{sender_name}</code>, etc., 
+            which are automatically replaced with actual values when sending emails.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Configuration</h2>
+        <p>
+            AutoScraper can be configured through environment variables or a configuration file:
+        </p>
+        <table>
+            <tr>
+                <th>Variable</th>
+                <th>Description</th>
+                <th>Default</th>
+            </tr>
+            <tr>
+                <td><code>EMAIL_SERVER</code></td>
+                <td>SMTP server for sending emails</td>
+                <td>smtp.gmail.com</td>
+            </tr>
+            <tr>
+                <td><code>EMAIL_PORT</code></td>
+                <td>SMTP server port</td>
+                <td>587</td>
+            </tr>
+            <tr>
+                <td><code>EMAIL_USERNAME</code></td>
+                <td>Email account username</td>
+                <td>None (must be provided)</td>
+            </tr>
+            <tr>
+                <td><code>EMAIL_PASSWORD</code></td>
+                <td>Email account password or app password</td>
+                <td>None (must be provided)</td>
+            </tr>
+            <tr>
+                <td><code>EMAIL_FROM</code></td>
+                <td>Sender email address</td>
+                <td>Same as EMAIL_USERNAME</td>
+            </tr>
+            <tr>
+                <td><code>MAX_CONCURRENT_SCRAPES</code></td>
+                <td>Maximum number of concurrent website scrapes</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td><code>DEFAULT_DELAY</code></td>
+                <td>Default delay between requests (seconds)</td>
+                <td>10</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Troubleshooting</h2>
+        <div class="warning">
+            <strong>Important:</strong> Google may block automated scraping attempts. AutoScraper implements various techniques to avoid detection, but there's no guarantee these will always work as Google regularly updates its security measures.
+        </div>
+        
+        <h3>Common Issues</h3>
+        <ul>
+            <li>
+                <strong>No results found:</strong> Google might be blocking your requests. Try increasing the delay between requests or using a proxy.
+            </li>
+            <li>
+                <strong>Email sending fails:</strong> Check your SMTP settings and ensure you're using an app password if using Gmail.
+            </li>
+            <li>
+                <strong>Rate limiting:</strong> If you're getting 429 errors, you're being rate limited. Increase the delay between requests.
+            </li>
+        </ul>
+        
+        <div class="note">
+            <strong>Tip:</strong> Check the debug directory for HTML responses from Google to diagnose scraping issues.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Legal Considerations</h2>
+        <p>
+            When using AutoScraper, be aware of the following legal considerations:
+        </p>
+        <ul>
+            <li>Web scraping may violate the terms of service of some websites.</li>
+            <li>Always respect robots.txt files and website terms of use.</li>
+            <li>Ensure compliance with email marketing laws like CAN-SPAM, GDPR, etc.</li>
+            <li>This tool is provided for educational purposes only.</li>
+        </ul>
+    </div>
+
+    <footer>
+        <p>AutoScraper &copy; 2023 | <a href="https://github.com/yourusername/autoscraper">GitHub</a></p>
+        <p>Documentation generated on March 12, 2024</p>
+    </footer>
+</body>
+</html> 

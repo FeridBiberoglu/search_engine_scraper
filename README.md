@@ -1,201 +1,132 @@
 # AutoScraper
 
-![License](https://img.shields.io/badge/License-MIT-blue.svg)
-![Python](https://img.shields.io/badge/Python-3.8%2B-brightgreen)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.70.0-green)
-![Docker](https://img.shields.io/badge/Docker-Compatible-blue)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.70.0-green.svg)
+![Docker](https://img.shields.io/badge/docker-compatible-blue.svg)
 
-An advanced Google scraper for finding and gathering business contact information with built-in email functionality. This tool uses sophisticated techniques to bypass Google's security measures and scrape search results.
+Advanced Google scraper and business contact finder with built-in email functionality.
 
-![AutoScraper Screenshot](https://via.placeholder.com/800x400?text=AutoScraper+Screenshot)
+## 🚀 Features
 
-## 🌟 Features
-
-- **Advanced Google Scraping**: Bypasses Google's security checks and CAPTCHAs
-- **Business Contact Extraction**: Finds email addresses and contact information from websites
-- **Email Automation**: Sends templated emails to gathered contacts
-- **Modern Web Interface**: Beautiful and responsive UI for easy operation
-- **API Access**: Fully documented REST API for integration
-- **Command-Line Interface**: Use from the terminal for automation
+- **Google Search Scraping**: Automatically search Google for businesses and extract URLs
+- **Security Bypass**: Advanced techniques to avoid Google's security checks
+- **Business Contact Extraction**: Find email addresses and contact information from websites
+- **Email Automation**: Send personalized emails using customizable templates
+- **Web Interface**: User-friendly interface for configuring and monitoring scraping jobs
+- **Command-Line Interface**: Powerful CLI for automation and scripting
 - **Docker Support**: Easy deployment with Docker and docker-compose
-- **Asynchronous Processing**: Handles multiple requests concurrently for improved performance
+- **Asynchronous Processing**: Fast, concurrent processing of multiple websites
 
-## 📋 Requirements
+## 📋 Documentation
 
-- Python 3.8+
-- Docker (optional, for containerized deployment)
+For comprehensive documentation, see:
 
-## 🚀 Installation
+- [HTML Documentation](docs/html/index.html) - Detailed documentation with examples and API reference
+- [Project Structure](docs/project_structure.md) - Overview of the project's file structure
+- [API Reference](docs/api_reference.md) - Detailed API documentation
 
-### Option 1: Using Python
+## 🛠️ Installation
 
-1. Clone the repository:
+### Using Python
+
 ```bash
+# Clone the repository
 git clone https://github.com/yourusername/autoscraper.git
 cd autoscraper
+
+# Run the installation script
+chmod +x install.sh
+./install.sh
 ```
 
-2. Create a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+### Using Docker
 
-3. Install the package:
 ```bash
-pip install -e .
-```
-
-### Option 2: Using Docker
-
-1. Clone the repository:
-```bash
+# Clone the repository
 git clone https://github.com/yourusername/autoscraper.git
 cd autoscraper
-```
 
-2. Build and start the container:
-```bash
+# Build and run with Docker Compose
 docker-compose up -d
 ```
 
-## 📊 Usage
+## 📝 Usage
 
 ### Web Interface
 
-Start the web server:
 ```bash
+# Start the web server
+python -m autoscraper.app
+
+# Or use the convenience script
 python run.py web
 ```
 
-Then open http://localhost:8000 in your browser.
+Then open your browser and navigate to `http://localhost:8000`.
 
 ### Command-Line Interface
 
-Run a search from the command line:
 ```bash
-python run.py cli "dentist amsterdam" --pages 3
+# Basic search
+autoscraper search "dentists amsterdam" --pages 3
+
+# Search and send emails
+autoscraper search "lawyers new york" --pages 5 --send-emails --email-template introduction_email
+
+# List available email templates
+autoscraper templates
 ```
-
-For more options:
-```bash
-python run.py cli --help
-```
-
-### Quick Test
-
-Run a test scrape:
-```bash
-python run.py test
-```
-
-### Docker
-
-If using Docker:
-```bash
-docker-compose up -d
-```
-
-Then access the web interface at http://localhost:8000.
 
 ## 🔌 API Reference
 
-AutoScraper provides a REST API for integration with other systems:
-
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/scrape` | POST | Start a scraping job |
-| `/send-email` | POST | Send an email to a contact |
-| `/send-test-emails` | POST | Send test emails to all contacts |
+| `/scrape` | POST | Start a new scraping job |
+| `/results` | GET | View scraping results |
 | `/download/{filename}` | GET | Download results as CSV |
+| `/send-email` | POST | Send an email to a specific contact |
 | `/email-templates` | GET | List available email templates |
-| `/email-template/{name}` | GET | Get a specific email template |
 
-API documentation is available at http://localhost:8000/docs when the server is running.
+## 📧 Email Templates
 
-## 📝 Email Templates
+AutoScraper comes with several pre-defined email templates:
 
-The system includes several email templates located in the `templates` directory:
-
-- `introduction_email.txt`: For introducing your company/service
-- `partnership_email.txt`: For proposing business partnerships
-- `service_offer_email.txt`: For offering specific services
-
-You can customize these templates or add new ones as needed.
+- `introduction_email.txt`: A general introduction to your services
+- `partnership_email.txt`: Proposal for potential business partnerships
+- `service_offer_email.txt`: Special offer for your services
+- `event_invitation_email.txt`: Invitation to an event or webinar
 
 ## ⚙️ Configuration
 
-### Environment Variables
+AutoScraper can be configured through environment variables:
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `EMAIL_SERVER` | SMTP server address | smtp.gmail.com |
-| `EMAIL_PORT` | SMTP server port | 587 |
-| `EMAIL_USERNAME` | SMTP username | - |
-| `EMAIL_PASSWORD` | SMTP password | - |
-| `EMAIL_FROM` | Default sender email | - |
-| `MAX_CONCURRENT_SCRAPES` | Maximum concurrent scraping tasks | 5 |
-| `DEFAULT_DELAY` | Default delay between requests in seconds | 10 |
+- `EMAIL_SERVER`: SMTP server for sending emails (default: smtp.gmail.com)
+- `EMAIL_PORT`: SMTP server port (default: 587)
+- `EMAIL_USERNAME`: Email account username
+- `EMAIL_PASSWORD`: Email account password or app password
+- `EMAIL_FROM`: Sender email address (default: same as EMAIL_USERNAME)
+- `MAX_CONCURRENT_SCRAPES`: Maximum number of concurrent website scrapes (default: 5)
+- `DEFAULT_DELAY`: Default delay between requests in seconds (default: 10)
 
-### Docker Configuration
+## 🔍 Troubleshooting
 
-You can modify the `docker-compose.yml` file to change port mappings, volumes, and environment variables.
+- **No results found**: Google might be blocking your requests. Try increasing the delay between requests or using a proxy.
+- **Email sending fails**: Check your SMTP settings and ensure you're using an app password if using Gmail.
+- **Rate limiting**: If you're getting 429 errors, you're being rate limited. Increase the delay between requests.
 
-## 🔧 Troubleshooting
+## 🔮 Future Improvements
 
-### Common Issues
-
-1. **Getting blocked by Google**:
-   - Try increasing the delay between requests
-   - Use a VPN or proxy service
-   - Rotate user agents more frequently
-
-2. **No results found**:
-   - Check if the search query is specific enough
-   - View the debug HTML files in `debug/` directory
-   - Ensure your IP isn't temporarily blocked by Google
-
-3. **Email sending failures**:
-   - Verify SMTP settings
-   - Check if recipient email addresses are valid
-   - Ensure email templates are properly formatted
-
-## 📁 Project Structure
-
-```
-autoscraper/
-├── autoscraper/            # Python package
-│   ├── __init__.py         # Package initialization
-│   ├── app.py              # FastAPI web application
-│   ├── cli.py              # Command-line interface
-│   ├── scraper.py          # Core scraper functionality
-│   ├── test_scraper.py     # Test script
-│   ├── static/             # Static assets for web UI
-│   └── templates/          # HTML templates for web UI
-├── templates/              # Email templates
-├── debug/                  # Debug output directory
-├── results/                # Results output directory
-├── Dockerfile              # Docker configuration
-├── docker-compose.yml      # Docker Compose configuration
-├── requirements.txt        # Python dependencies
-├── setup.py                # Package installation
-├── run.py                  # Entry point script
-├── LICENSE                 # License file
-└── README.md               # This file
-```
-
-## 📈 Future Improvements
-
-- Implement proxy rotation
-- Add support for other search engines
-- Create more sophisticated email templates
-- Improve CAPTCHA detection and handling
-- Add better error reporting and logging
+- Proxy support for avoiding IP-based blocking
+- More advanced parsing for different types of websites
+- Machine learning for better contact information extraction
+- Integration with CRM systems
+- Support for more search engines
 
 ## ⚠️ Legal Disclaimer
 
-This tool is provided for educational and research purposes only. Always respect website terms of service and robots.txt files. Web scraping may be against the terms of service of some websites, and using this tool improperly could result in your IP being blocked or other consequences.
+This tool is provided for educational purposes only. Web scraping may violate the terms of service of some websites. Always respect robots.txt files and website terms of use. Ensure compliance with email marketing laws like CAN-SPAM, GDPR, etc.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
