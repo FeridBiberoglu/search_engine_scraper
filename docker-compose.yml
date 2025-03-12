@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  autoscraper:
+    build: .
+    container_name: autoscraper
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./debug:/app/debug
+      - ./templates:/app/templates
+      - ./results:/app/results
+    restart: unless-stopped
+    environment:
+      - TZ=UTC
+      - EMAIL_SERVER=smtp.gmail.com
+      - EMAIL_PORT=587
+      - EMAIL_USERNAME=your-email@gmail.com
+      - EMAIL_PASSWORD=your-app-password
+      - EMAIL_FROM=your-email@gmail.com
+      - MAX_CONCURRENT_SCRAPES=5
+      - DEFAULT_DELAY=10
+    networks:
+      - autoscraper-network
+
+networks:
+  autoscraper-network:
+    driver: bridge 

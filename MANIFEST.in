@@ -1,0 +1,13 @@
+include LICENSE
+include README.md
+include requirements.txt
+include pyproject.toml
+
+recursive-include autoscraper/static *
+recursive-include autoscraper/templates *
+recursive-include templates *
+
+global-exclude *.py[cod]
+global-exclude __pycache__
+global-exclude *.so
+global-exclude .DS_Store 

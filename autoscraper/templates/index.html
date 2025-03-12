@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}AutoScraper - Google Scraper and Contact Finder{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="text-center mb-5">
+            <h1 class="display-4">AutoScraper</h1>
+            <p class="lead text-muted">Advanced Google scraper and business contact finder</p>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Start a New Scraping Job</h5>
+                
+                <form id="scrape-form" method="post" action="/scrape">
+                    <div class="mb-3">
+                        <label for="query" class="form-label">Search Query</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="query" name="query" 
+                                   placeholder="Enter search query (e.g., 'dentist amsterdam')" required>
+                        </div>
+                        <div class="form-text">Enter keywords to search for businesses</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="num_pages" class="form-label">Number of Pages</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-files"></i></span>
+                            <input type="number" class="form-control" id="num_pages" name="num_pages" 
+                                   min="1" max="10" value="3">
+                        </div>
+                        <div class="form-text">More pages = more results but takes longer</div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg" id="start-scraping">
+                            <i class="bi bi-gear-fill me-2"></i>Start Scraping
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="progress-container" class="card mt-4 d-none">
+            <div class="card-body">
+                <h5 class="card-title">Scraping in Progress</h5>
+                <div class="progress mb-3">
+                    <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: 0%"></div>
+                </div>
+                <p id="status-message" class="mb-0">Initializing...</p>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Features</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <i class="bi bi-shield-check text-success me-2"></i>
+                        Bypasses Google's security checks with advanced techniques
+                    </li>
+                    <li class="list-group-item">
+                        <i class="bi bi-envelope text-success me-2"></i>
+                        Extracts emails and contact information automatically
+                    </li>
+                    <li class="list-group-item">
+                        <i class="bi bi-envelope-paper text-success me-2"></i>
+                        Send emails directly to discovered contacts
+                    </li>
+                    <li class="list-group-item">
+                        <i class="bi bi-speedometer2 text-success me-2"></i>
+                        Fast asynchronous processing for better performance
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('scrape-form');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const statusMessage = document.getElementById('status-message');
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const data = {
+                query: formData.get('query'),
+                num_pages: parseInt(formData.get('num_pages'))
+            };
+            
+            // Show progress container
+            progressContainer.classList.remove('d-none');
+            statusMessage.textContent = 'Starting scraping job...';
+            progressBar.style.width = '5%';
+            
+            // Disable form
+            form.querySelectorAll('input, button').forEach(el => el.disabled = true);
+            
+            // Submit scraping job
+            fetch('/scrape', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // Update progress to complete
+                progressBar.style.width = '100%';
+                statusMessage.textContent = `Scraping completed! Found ${data.companies_found} companies.`;
+                
+                // Enable form again
+                form.querySelectorAll('input, button').forEach(el => el.disabled = false);
+                
+                // Redirect to results page after a delay
+                setTimeout(() => {
+                    window.location.href = '/results';
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                statusMessage.textContent = `Error: ${error.message}`;
+                progressContainer.classList.add('bg-danger', 'text-white');
+                
+                // Enable form again
+                form.querySelectorAll('input, button').forEach(el => el.disabled = false);
+            });
+            
+            // Simulate progress updates (in a real app, this would come from an API endpoint)
+            let progress = 5;
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 10);
+                if (progress >= 90) {
+                    progress = 90;
+                    clearInterval(interval);
+                }
+                progressBar.style.width = `${progress}%`;
+            }, 1000);
+        });
+    });
+</script>
+{% endblock %} 
