@@ -1,0 +1,78 @@
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.env
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+.project
+.pydevproject
+.settings/
+
+# Jupyter notebook files
+.ipynb_checkpoints
+*.ipynb
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Scraping output files
+google_source.html
+google_urls.txt
+google_results.csv
+google_results_with_emails.csv
+emails_only.csv
+search_results.json
+email_scraping_summary.txt
+*.xlsx
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+*.db
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Personal files that might contain sensitive information
+credentials.py
+secrets.py
+config.local.py 
